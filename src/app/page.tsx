@@ -1,95 +1,82 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+'use client'
+import { useEffect, useState } from "react";
+import { Container, Box, CssBaseline } from "@mui/material";
+import Header from "@/component/Header";
+import GameBoard from "@/component/GameBoard";
+import ScoreBoard from "@/component/ScoreBoard";
+import Timer from "@/component/Timer";
+import ControlPanel from "@/component/ControlPanel";
+import Footer from "@/component/Footer";
 
 export default function Home() {
-  return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol>
-          <li>
-            Get started by editing <code>src/app/page.tsx</code>.
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [score, setScore] = useState(0);
+  const [timeLeft, setTimeLeft] = useState(30);
+  const [gameRunning, setGameRunning] = useState(false);
 
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+  useEffect(() => {
+    if (!gameRunning) return;
+    if (timeLeft <= 0) {
+      setGameRunning(false);
+
+      if (typeof window !== "undefined") {
+        const existingScores = JSON.parse(localStorage.getItem("scores") || "[]");
+        existingScores.push(score);
+        localStorage.setItem("scores", JSON.stringify(existingScores));
+      }
+
+      return;
+    }
+
+    const timer = setInterval(() => setTimeLeft(prev => prev - 1), 1000);
+    return () => clearInterval(timer);
+  }, [gameRunning, timeLeft]);
+
+  const handleReset = () => {
+    if (typeof window !== "undefined") {
+      const existingScores = JSON.parse(localStorage.getItem("scores") || "[]");
+      existingScores.push(score);
+      localStorage.setItem("scores", JSON.stringify(existingScores));
+    }
+    setScore(0);
+    setTimeLeft(30);
+    setGameRunning(false);
+  };
+
+  return (
+    <>
+      <Box
+        display="flex"
+        flexDirection="column"
+        minHeight="100vh"
+      >
+        <CssBaseline />
+        <Container maxWidth="md" sx={{ display: "flex", flexDirection: "column" }}>
+
+          <Header />
+
+          <Box sx={{ mt: 2, display: "flex", justifyContent: "center", gap: 4 }}>
+            <ScoreBoard score={score} />
+            <Timer timeLeft={timeLeft} />
+          </Box>
+
+          <Box component="main" sx={{ flexGrow: 1, mt: 4 }}>
+            <GameBoard
+              gameRunning={gameRunning}
+              incrementScore={() => setScore(prev => prev + 1)}
             />
-            Deploy now
-          </a>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.secondary}
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className={styles.footer}>
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+
+            <ControlPanel
+              start={() => {
+                setScore(0);
+                setTimeLeft(30);
+                setGameRunning(true);
+              }}
+              reset={handleReset}
+            />
+          </Box>
+        </Container>
+        <Footer />
+      </Box>
+    </>
   );
 }
