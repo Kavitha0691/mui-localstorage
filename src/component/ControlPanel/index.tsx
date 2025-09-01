@@ -9,7 +9,7 @@ const ControlPanel = ({ start, reset }: ControlPanelProps) => {
         display: "flex",
         justifyContent: "center",
         gap: 4,
-        mt: 6,
+        m: 4,
       }}
     >
       <Button

@@ -7,6 +7,7 @@ import ScoreBoard from "@/component/ScoreBoard";
 import Timer from "@/component/Timer";
 import ControlPanel from "@/component/ControlPanel";
 import Footer from "@/component/Footer";
+import ScoreHistory from "@/component/ScoreHistory";
 
 export default function Home() {
   const [score, setScore] = useState(0);
@@ -60,6 +61,7 @@ export default function Home() {
           </Box>
 
           <Box component="main" sx={{ flexGrow: 1, mt: 4 }}>
+            <ScoreHistory />
             <GameBoard
               gameRunning={gameRunning}
               incrementScore={() => setScore(prev => prev + 1)}
@@ -73,6 +75,7 @@ export default function Home() {
               }}
               reset={handleReset}
             />
+
           </Box>
         </Container>
         <Footer />

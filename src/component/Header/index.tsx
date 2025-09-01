@@ -11,7 +11,7 @@ const Header = () => {
         position="static"
         color="transparent"
         elevation={0}
-        sx={{ height: "15%", justifyContent: "center", my: 3 }}
+        sx={{ height: "15%", justifyContent: "center", my: 1 }}
       >
         <Toolbar sx={{ justifyContent: "center" }}>
           <Typography
